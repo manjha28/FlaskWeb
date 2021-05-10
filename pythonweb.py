@@ -2,16 +2,20 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
+#Basically a dictionary which take a key value as the name by which we want to store the DB
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pythonweb.db'
 db = SQLAlchemy(app)
 
 class Item(db.Model):
+    #Don't know the reason why the reference cannot be find
     id = db.Column(db.Integer(),primary_key = True)
     name = db.Column(db.String(length = 30),nullable = False,unique = True)
     price = db.Column(db.Integer(), nullable=False)
     barcode = db.Column(db.String(length=14), nullable=False, unique=True)
     description = db.Column(db.String(length=1024), nullable=False, unique=True)
 
+    #A magic method which returns the variable we want instead of default options
     def __repr__(self):
         return f'Item {self.name}'
 
