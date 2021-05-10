@@ -2,6 +2,8 @@ from ManishWeb import db
 
 '''db.drop_all(),db.create_all(),item1 = Item.query.filter_by(name = 'Iphone 10'),i = Item.query.filter_by(name='Iphone').first().id,
 '''
+#TODO : Need to Learn About Flask Forms
+#FIXME : I need to fix the Relationship b/w the User and Item
 
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
