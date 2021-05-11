@@ -1,7 +1,7 @@
 from ManishWeb import app
 from flask import render_template
 from ManishWeb.models import Item
-
+from ManishWeb.forms import RegisterForm
 @app.route('/')
 @app.route('/home')
 def home_page():
@@ -25,3 +25,9 @@ def market_page():
     #     {'id': 3, 'name': 'Keyboard', 'barcode': '231985128446', 'price': 150}
     # ]
     return render_template('market.html', items=items)
+
+'''Rote for register page which contains a form'''
+@app.route('/register')
+def register_page():
+    form = RegisterForm()
+    return render_template('register.html',form = form)
