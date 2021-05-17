@@ -1,5 +1,5 @@
 from ManishWeb import app
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for
 from ManishWeb.models import Item,User
 from ManishWeb.forms import RegisterForm
 from ManishWeb import db
@@ -42,5 +42,5 @@ def register_page():
         return redirect(url_for('market_page'))
     if form.errors != {}: # If there's no error message in the dictionary
         for err_msg in form.errors.values():
-            flash(f"The error is {err_msg}")
+            print(f"The error is {err_msg}")
     return render_template('register.html',form = form)
