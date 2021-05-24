@@ -1,11 +1,15 @@
-from ManishWeb import db
-from ManishWeb import bcrypt
+from ManishWeb import db,login_manager,bcrypt
+from flask_login import UserMixin
+
 '''db.drop_all(),db.create_all(),item1 = Item.query.filter_by(name = 'Iphone 10'),i = Item.query.filter_by(name='Iphone').first().id,
 '''
 #TODO : Need to Learn About Flask Forms
 #FIXME : I need to fix the Relationship b/w the User and Item
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
-class User(db.Model):
+class User(db.Model,UserMixin):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(length=30), nullable=False, unique=True)
     email = db.Column(db.String(length=50), nullable=False, unique=True)
@@ -14,12 +18,22 @@ class User(db.Model):
     items = db.relationship('Item', backref='owned_user', lazy=True)
 
     @property
+    def pretty_budget(self):
+        if len(str(self.budget)) >= 4:
+            return f"{str(self.budget)[:-3]},{str(self.budget)[-3:]} INR"
+        else:
+            return f"{self.budget} INR"
+
+    @property
     def password_h(self):
         return self.password
 
     @password_h.setter
     def password_h(self, plain_password):
         self.password = bcrypt.generate_password_hash(plain_password).decode('utf-8')
+
+    def check_password_correction(self,attempted_password):
+        return bcrypt.check_password_hash(self.password,attempted_password)
 
 
 class Item(db.Model):
