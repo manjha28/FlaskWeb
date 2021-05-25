@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, flash, get_flashed_message
 from ManishWeb.models import Item,User
 from ManishWeb.forms import RegisterForm,LoginForm
 from ManishWeb import db
-from flask_login import login_user
+from flask_login import login_user, logout_user
 @app.route('/')
 @app.route('/home')
 def home_page():
@@ -60,3 +60,10 @@ def login_page():
         else:
             flash('Username or password does not match or incorrect! Please Try again', category='danger')
     return render_template('login.html', form=form)
+
+
+@app.route('/logout')
+def logout_page():
+    logout_user()
+    flash(f"Successfully logged out!", category='info')
+    return redirect(url_for('home_page'))
