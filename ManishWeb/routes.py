@@ -40,6 +40,8 @@ def register_page():
 
         db.session.add(user_to_create)
         db.session.commit()
+        login_user(user_to_create)
+        flash(f'You have successfuly created your account! You are now logged in as {user_to_create.username}', category='success')
         return redirect(url_for('market_page'))
     if form.errors != {}: # If there's no error message in the dictionary
         for err_msg in form.errors.values():
