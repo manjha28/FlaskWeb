@@ -39,8 +39,9 @@ def market_page():
                 flash(f"You do not have enough funds to purchase {p_item_object.name} as the remaining balance is {p_item_object.price}", category='danger')
             return redirect(url_for('market_page'))
     if request.method == 'GET':
+        owned_items = Item.query.filter_by(owner=current_user.id)
         items = Item.query.filter_by(owner=None)
-        return render_template('market.html', items=items, purchase_item=purchase_item)
+        return render_template('market.html', items=items, purchase_item=purchase_item, owned_items=owned_items)
         # items = [
     #     {'id': 1, 'name': 'Phone', 'barcode': '893212299897', 'price': 500},
     #     {'id': 2, 'name': 'Laptop', 'barcode': '123985473165', 'price': 900},
