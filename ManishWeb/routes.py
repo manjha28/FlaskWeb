@@ -18,8 +18,6 @@ def about_page(username):
 
 
 
-
-
 @app.route('/market', methods=['GET','POST'])
 @login_required
 def market_page():
