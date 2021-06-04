@@ -1,7 +1,7 @@
 from ManishWeb import app
 from flask import render_template, redirect, url_for, flash, get_flashed_messages,request
 from ManishWeb.models import Item,User
-from ManishWeb.forms import RegisterForm,LoginForm, PurchaseItemForm
+from ManishWeb.forms import RegisterForm,LoginForm, PurchaseItemForm, SellItemForm
 from ManishWeb import db
 from flask_login import login_user, logout_user, login_required, current_user
 
@@ -23,25 +23,55 @@ def about_page(username):
 @app.route('/market', methods=['GET','POST'])
 @login_required
 def market_page():
-    purchase_item = PurchaseItemForm()
-    ''' LOC below throws us a conirm form submission everytime I refreshed'''
-    # if purchase_item.validate_on_submit():
-    #     print(request.form.get('purchased_item'))
-    if request.method == 'POST':
+    purchase_form = PurchaseItemForm()
+    selling_form = SellItemForm()
+    if request.method == "POST":
+        #Purchase Item Logic
         purchased_item = request.form.get('purchased_item')
         p_item_object = Item.query.filter_by(name=purchased_item).first()
         if p_item_object:
             if current_user.can_purchase(p_item_object):
                 p_item_object.buy(current_user)
-
-                flash(f"Congratulations! You have successfully purchased {p_item_object.name} for {p_item_object.price}", category='success')
+                flash(f"Congratulations! You purchased {p_item_object.name} for {p_item_object.price}$", category='success')
             else:
-                flash(f"You do not have enough funds to purchase {p_item_object.name} as the remaining balance is {p_item_object.price}", category='danger')
-            return redirect(url_for('market_page'))
-    if request.method == 'GET':
-        owned_items = Item.query.filter_by(owner=current_user.id)
+                flash(f"Unfortunately, you don't have enough money to purchase {p_item_object.name}!", category='danger')
+        #Sell Item Logic
+        sold_item = request.form.get('sold_item')
+        s_item_object = Item.query.filter_by(name=sold_item).first()
+        if s_item_object:
+            if current_user.can_sell(s_item_object):
+                s_item_object.sell(current_user)
+                flash(f"Congratulations! You sold {s_item_object.name} back to market!", category='success')
+            else:
+                flash(f"Something went wrong with selling {s_item_object.name}", category='danger')
+
+
+        return redirect(url_for('market_page'))
+
+    if request.method == "GET":
         items = Item.query.filter_by(owner=None)
-        return render_template('market.html', items=items, purchase_item=purchase_item, owned_items=owned_items)
+        owned_items = Item.query.filter_by(owner=current_user.id)
+        return render_template('market.html', items=items, purchase_form=purchase_form, owned_items=owned_items, selling_form=selling_form)
+# def market_page():
+#     purchase_item = PurchaseItemForm()
+#     ''' LOC below throws us a conirm form submission everytime I refreshed'''
+#     # if purchase_item.validate_on_submit():
+#     #     print(request.form.get('purchased_item'))
+#     if request.method == 'POST':
+#         purchased_item = request.form.get('purchased_item')
+#         p_item_object = Item.query.filter_by(name=purchased_item).first()
+#         if p_item_object:
+#             if current_user.can_purchase(p_item_object):
+#                 p_item_object.buy(current_user)
+#
+#                 flash(f"Congratulations! You have successfully purchased {p_item_object.name} for {p_item_object.price}", category='success')
+#             else:
+#                 flash(f"You do not have enough funds to purchase {p_item_object.name} as the remaining balance is {p_item_object.price}", category='danger')
+#             return redirect(url_for('market_page'))
+#     if request.method == 'GET':
+#         items = Item.query.filter_by(owner=None)
+#         owned_items = Item.query.filter_by(owner=current_user.id)
+#         return render_template('market.html', items=items, purchase_item=purchase_item, owned_items=owned_items)
         # items = [
     #     {'id': 1, 'name': 'Phone', 'barcode': '893212299897', 'price': 500},
     #     {'id': 2, 'name': 'Laptop', 'barcode': '123985473165', 'price': 900},
